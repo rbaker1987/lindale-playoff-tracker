@@ -67,7 +67,7 @@ body{{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);fon
 main{{max-width:1080px;margin:0 auto;padding:28px 20px 48px;display:grid;gap:30px}}
 h1,h2,h3{{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;letter-spacing:.01em}}
 h1{{font-size:2.5rem;line-height:1.05}} h2{{font-size:1.55rem;margin-bottom:10px}} h3{{font-size:1.2rem;margin:14px 0 6px}}
-p{{margin:0 0 8px;max-width:70ch}} section{{min-width:0}}
+p{{margin:0 0 8px;max-width:70ch;text-wrap:pretty}} section{{min-width:0}}
 .lab{{color:var(--muted);font-size:.8rem}}
 .stamp{{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:8px 0 12px;color:var(--muted);font-size:.8rem}}
 .next{{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:8px;padding:18px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;align-items:center}}
@@ -90,6 +90,8 @@ rect.hi{{fill:var(--accent)}} rect.lo{{fill:var(--bar)}} .grid{{stroke:var(--lin
 circle.won{{fill:var(--accent);fill-opacity:.8}} circle.ups{{fill:var(--upset);fill-opacity:.9}} circle.me{{stroke:var(--ink);stroke-width:2;fill-opacity:1}}
 .key{{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0}} .key i{{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}}
 ul{{margin:0;padding-left:1.1em}} li{{margin:3px 0}}
+@media (min-width:1500px){{body{{font-size:16.5px}} main{{max-width:1280px;padding-top:40px}} h1{{font-size:2.9rem}} h2{{font-size:1.75rem}}}}
+@media (min-width:2200px){{body{{font-size:18px}} main{{max-width:1440px}}}}
 nav{{display:flex;gap:6px 16px;flex-wrap:wrap;margin:0 0 12px;font-size:.88rem}} nav a{{color:var(--accent);text-decoration:none;font-weight:600}} nav a:hover{{text-decoration:underline}} section[id],.two[id]{{scroll-margin-top:12px}}
 td.w{{white-space:normal;min-width:150px}} td small{{display:block;color:var(--muted);font-size:.78rem;white-space:normal;font-weight:400}}
 .wrap{{background:linear-gradient(to right,var(--panel) 30%,transparent),linear-gradient(to left,var(--panel) 30%,transparent),linear-gradient(to right,rgba(0,0,0,.18),transparent 12px),linear-gradient(to left,rgba(0,0,0,.18),transparent 12px);background-repeat:no-repeat;background-size:40px 100%,40px 100%,14px 100%,14px 100%;background-position:left,right,left,right;background-attachment:local,local,scroll,scroll;background-color:var(--panel)}}
@@ -110,10 +112,10 @@ tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .to
 @media print{{tr[hidden]{{display:table-row!important}} .tog{{display:none}} nav{{display:none}} body{{background:#fff;font-size:11px}} main{{padding:0;gap:16px;max-width:none}} .wrap{{overflow:visible}} th,td{{white-space:normal;padding:3px 6px}} tr,.card,.bbox,.next,svg{{break-inside:avoid}} h2,h3{{break-after:avoid}}}}
 </style></head><body><main>
 <header>
-<h1>Lindale 4A Division I playoff tracker</h1>
+<h1>Lindale 4A Division&nbsp;I playoff tracker</h1>
 <div class="stamp">Odds as of {d}</div>
 <nav aria-label="Page sections"><a href="#next">Next game</a><a href="#path">Path</a><a href="#bracket">Bracket</a><a href="#charts">Charts</a><a href="#games">This round</a><a href="#results">Results</a></nav>
-<p><b>{e(fav['team'])}</b> is the title favorite at <b>{pct(fav['p_title'])}</b>. Lindale is at <b>{pct(lin['p_title'])}</b> to win state and <b>{pct(lin['p_region'])}</b> to win Region II.</p>
+<p><b>{e(fav['team'])}</b> is the title favorite at <b>{pct(fav['p_title'])}</b>. Lindale is at <b>{pct(lin['p_title'])}</b> to win state and <b>{pct(lin['p_region'])}</b> to win&nbsp;Region&nbsp;II.</p>
 <p class="lab">Odds are estimates from simulated brackets built on MaxPreps ratings. Single games swing a lot, so read them as rough chances, not predictions. This page is refreshed after each round's games.</p>
 </header>
 <section class="next" id="next">
