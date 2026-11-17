@@ -98,9 +98,9 @@ watch=json.loads(r'''{
 "record": "9-2",
 "players": "Named players not found in sources. Roster lists QBs Corderio Dunn (Sr) and Chad Buckner (So), WR Jaheim Cummings and Kevin Allison.",
 "watch": [
-"Beat Fort Worth Eastern Hills 33-28 in bi-district while out-gained 305 to 211 yards, so they win close games.",
-"Lost 56-22 to Dallas Kimball and 39-32 to Carrollton Turner earlier. They can give up points.",
-"Went 2-8 in 2025, so this is a big turnaround. Limited info beyond that."
+"Beat Fort Worth Eastern Hills 33-28 in bi-district while out-gained 305 to 211 yards, and passed for only 83. They lean on the run and big plays.",
+"Earlier results: beat Lincoln 54-42 (Sep 25), lost 56-22 to Kimball and 39-32 to Carrollton Turner. Scored 35+ in four of their last five district games.",
+"Went 2-8 in 2025, so this is a big turnaround. No named players turned up in sources; the roster lists QBs Corderio Dunn (Sr) and Chad Buckner (So)."
 ]
 },
 {
@@ -120,11 +120,11 @@ watch=json.loads(r'''{
 "team": "Kimball",
 "round": "Regional",
 "record": "9-2",
-"players": "Named players not found in sources.",
+"players": "Named players not found in sources (stat pages are blocked or paywalled).",
 "watch": [
 "Won 49-14 over Benbrook in bi-district.",
-"Beat Wilmer-Hutchins 56-22 earlier this season. Limited info beyond scores.",
-"Our read: likely the stronger Dallas-area opponent."
+"Beat Wilmer-Hutchins 56-22 on Sep 10, but lost 44-28 to Lincoln on Sep 18.",
+"Our read: likely the stronger Dallas-area opponent. Limited info beyond scores."
 ]
 },
 {
@@ -156,11 +156,11 @@ watch=json.loads(r'''{
 "team": "Kennedale",
 "round": "Region final",
 "record": "10-1",
-"players": "RB Zarrian Carliss (64-yard TD run vs Eastern Hills), RB Ayden Turner, K Bennett Markham.",
+"players": "Zarrian Carliss (reported as QB and as a big rusher: TD runs of 47 and 64 yds vs Eastern Hills), RB Ayden Turner (scored the winning TD in double overtime vs Carter), K Bennett Markham (35 and 43-yd field goals).",
 "watch": [
-"Wing-T offense that kills clock. It will shorten the game.",
-"District champion. Beat Dallas Carter 34-28 in overtime.",
-"Coach Richard Barrett has made the playoffs every year since 2001."
+"Wing-T offense that kills clock; it will shorten the game.",
+"District 5-4A champion (10-1). Beat Dallas Carter 34-28 in double overtime, so they win close games.",
+"Lost 35-17 at Krum in the opener. Coach Richard Barrett has made the playoffs every year since 2001."
 ]
 },
 {
@@ -168,9 +168,10 @@ watch=json.loads(r'''{
 "team": "Lincoln",
 "round": "Region final",
 "record": "9-2",
-"players": "Named players not found in sources.",
+"players": "RB/ATH Jastin Hampton (18-yd TD run vs Southwest), Jaylan Bellard (75-yd kickoff return TD), DB Anthony Phillip (INT).",
 "watch": [
-"Beat Fort Worth Southwest 45-0 in bi-district.",
+"Beat Fort Worth Southwest 45-0 in bi-district: led 24-0 after one quarter, helped by a kickoff return TD and a turnover.",
+"Entered the playoffs 8-2 (7-1 district). Lost 54-42 to Wilmer-Hutchins and 47-30 to Fort Worth Wyatt.",
 "Limited info beyond scores."
 ]
 },
