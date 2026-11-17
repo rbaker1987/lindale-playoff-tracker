@@ -1,0 +1,119 @@
+import json, datetime, html
+L=lambda f: json.load(open(f+'.json'))['rows']
+odds,path,games,results,season,hist=[L(f) for f in ['odds','path','games','results','season','history']]
+e=lambda v:'' if v is None else html.escape(str(v))
+pct=lambda v:'&lt;1%' if v==0 else f'{v}%'
+lin=next(r for r in odds if r['team']=='Lindale'); fav=odds[0]; nx=path[0]
+as_of=max(h['as_of'] for h in hist); d=datetime.date.fromisoformat(as_of).strftime('%B %-d, %Y')
+ls=sorted([h for h in hist if h['team']=='Lindale'],key=lambda h:h['as_of'])
+def chg(f):
+    if len(ls)<2: return 'First snapshot'
+    dd=ls[-1][f]-ls[-2][f]; return 'No change' if dd==0 else f"{'Up' if dd>0 else 'Down'} {abs(dd)} pts since {e(ls[-2]['label'])}"
+def table(head,rows,num=(),cls=None):
+    h=''.join(f'<th{" class=n" if i in num else ""}>{x}</th>' for i,x in enumerate(head))
+    b=''.join((f'<tr class="{cls(i)}">' if cls and cls(i) else '<tr>')+''.join(f'<td{" class=n" if j in num else ""}>{e(x) if not str(x).startswith("&lt;") else x}</td>' for j,x in enumerate(r))+'</tr>' for i,r in enumerate(rows))
+    return f'<div class="wrap"><table><thead><tr>{h}</tr></thead><tbody>{b}</tbody></table></div>'
+# title bar chart
+top=odds[:8]; bh=30; W=560; ml=110; mx=max(r['p_title'] for r in top)
+bars=''.join(f'<text x="{ml-10}" y="{i*bh+20}" text-anchor="end">{e(r["team"])}</text><rect x="{ml}" y="{i*bh+7}" width="{(W-ml-50)*r["p_title"]/mx:.1f}" height="{bh-12}" rx="3" class="{"hi" if r["team"]=="Lindale" else "lo"}"/><text x="{ml+(W-ml-50)*r["p_title"]/mx+8:.1f}" y="{i*bh+20}" class="val">{pct(r["p_title"])}</text>' for i,r in enumerate(top))
+barsvg=f'<svg viewBox="0 0 {W} {len(top)*bh+6}" role="img" aria-label="Chance to win the state title for the top eight teams">{bars}</svg>'
+# scatter
+SW,SH=560,320; m=dict(l=44,r=16,t=16,b=42); xm=60; ymin,ymax=-20,70
+X=lambda v: m['l']+(SW-m['l']-m['r'])*v/xm; Y=lambda v: m['t']+(SH-m['t']-m['b'])*(ymax-min(v,ymax))/(ymax-ymin)
+g=''.join(f'<line x1="{m["l"]}" x2="{SW-m["r"]}" y1="{Y(t):.1f}" y2="{Y(t):.1f}" class="{"zero" if t==0 else "grid"}"/><text x="{m["l"]-8}" y="{Y(t)+4:.1f}" text-anchor="end">{t}</text>' for t in range(-20,71,10) if t%20==0)
+g+=''.join(f'<text x="{X(t):.1f}" y="{SH-m["b"]+16}" text-anchor="middle">{t}</text>' for t in range(0,61,10))
+g+=f'<line x1="{X(0)}" y1="{Y(0)}" x2="{X(60)}" y2="{Y(60)}" class="ref"/><text x="{(m["l"]+SW-m["r"])/2}" y="{SH-6}" text-anchor="middle">Predicted margin for the favorite</text><text transform="translate(12,{(SH-m["b"]+m["t"])/2}) rotate(-90)" text-anchor="middle">Actual margin</text>'
+for r in results:
+    me='Lindale' in (r['favorite'],r['underdog'])
+    g+=f'<circle cx="{X(r["pred_margin"]):.1f}" cy="{Y(r["actual_margin"]):.1f}" r="{7 if me else 5}" class="{"won" if r["fav_won"] else "ups"}{" me" if me else ""}"><title>{e(r["winner"])} {e(r["score"])} {e(r["loser"])}. {e(r["favorite"])} was favored by {r["pred_margin"]:g}.</title></circle>'
+    if r['actual_margin']>ymax: g+=f'<text x="{X(r["pred_margin"])+9:.1f}" y="{Y(ymax)+4:.1f}">won by {r["actual_margin"]}</text>'
+    if me: g+=f'<text x="{X(r["pred_margin"])+11:.1f}" y="{Y(r["actual_margin"])+4:.1f}" class="val">Lindale</text>'
+scsvg=f'<svg viewBox="0 0 {SW} {SH}" role="img" aria-label="Predicted versus actual margin for the favorite in each playoff game">{g}</svg>'
+# bracket
+reg=sorted([r for r in odds if r['region']=='II'],key=lambda r:r['slot'])
+def col(title,size,f,keep=False):
+    out=f'<div class="bcol"><div class="lab">{title}</div>'
+    for k in sorted(set(r['slot']//size for r in reg)):
+        ts=[r for r in reg if r['slot']//size==k]
+        if not keep: ts=sorted(ts,key=lambda r:-r[f])
+        out+='<div class="bbox">'+''.join(f'<div class="brow{" me" if r["team"]=="Lindale" else ""}"><span>{e(r["team"])}</span><span>{pct(r[f])}</span></div>' for r in ts)+'</div>'
+    return out+'</div>'
+steps=[('p_area','Win the area round'),('p_regional','Reach the region final'),('p_region','Win Region II'),('p_final','Reach the state final'),('p_title','Win the state title')]
+cards=''.join(f'<div class="card"><span class="big">{pct(lin[f])}</span><span>{n}</span><span class="lab">{chg(f)}</span></div>' for f,n in steps)
+firsts={i for i,r in enumerate(path) if i==0 or path[i-1]['round']!=r['round']}
+ups=sorted([r for r in results if not r['fav_won']],key=lambda r:-r['pred_margin'])
+w=sum(1 for r in season if r['margin']>0); n=len(season)
+P=f'''<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lindale Playoff Tracker Snapshot</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Public+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: one scanning column, summary first (next game, odds), then path, bracket, charts, then reference tables. */
+:root{{--bg:#f4f6f9;--panel:#ffffff;--ink:#14213a;--muted:#5b6880;--line:#d5dbe6;--accent:#1f5fbf;--upset:#c9781c;--bar:#b9c2d1;
+--display:"Barlow Condensed","Arial Narrow",sans-serif;--body:"Public Sans",system-ui,sans-serif}}
+@media (prefers-color-scheme:dark){{:root:not([data-theme="light"]){{--bg:#0f1624;--panel:#182235;--ink:#e8edf6;--muted:#9aa7bd;--line:#2c3a54;--accent:#6ea6f5;--upset:#e9a14a;--bar:#47566f;color-scheme:dark}}}}
+:root[data-theme="dark"]{{--bg:#0f1624;--panel:#182235;--ink:#e8edf6;--muted:#9aa7bd;--line:#2c3a54;--accent:#6ea6f5;--upset:#e9a14a;--bar:#47566f;color-scheme:dark}}
+*{{box-sizing:border-box}}
+body{{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}}
+main{{max-width:1080px;margin:0 auto;padding:28px 20px 48px;display:grid;gap:30px}}
+h1,h2,h3{{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;letter-spacing:.01em}}
+h1{{font-size:2.5rem;line-height:1.05}} h2{{font-size:1.55rem;margin-bottom:10px}} h3{{font-size:1.2rem;margin:14px 0 6px}}
+p{{margin:0 0 8px;max-width:70ch}} section{{min-width:0}}
+.lab{{color:var(--muted);font-size:.8rem}}
+.stamp{{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:8px 0 12px;color:var(--muted);font-size:.8rem}}
+.next{{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:8px;padding:18px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;align-items:center}}
+.next .opp{{font-family:var(--display);font-size:2.1rem;font-weight:600;line-height:1.1;display:block}}
+.big{{font-family:var(--display);font-weight:600;font-size:2.3rem;line-height:1;font-variant-numeric:tabular-nums;display:block}}
+.cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}}
+.card{{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:4px}}
+.wrap{{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px}}
+table{{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:.88rem}}
+th,td{{text-align:left;padding:7px 11px;border-bottom:1px solid var(--line);white-space:nowrap}}
+tbody tr:last-child td{{border-bottom:0}}
+th{{color:var(--muted);font-weight:600;font-size:.76rem;text-transform:uppercase;letter-spacing:.04em}}
+.n{{text-align:right}} tr.me td{{font-weight:600}} tr.g0 td{{border-top:2px solid var(--muted)}} tr.up td:last-child{{color:var(--upset);font-weight:600}}
+.two{{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:26px;align-items:start}}
+.bracket{{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;align-items:center}}
+.bcol{{display:grid;gap:10px}} .bbox{{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px}}
+.brow{{display:flex;justify-content:space-between;gap:12px;padding:2px 0;font-variant-numeric:tabular-nums}} .brow.me{{font-weight:600;color:var(--accent)}}
+svg{{width:100%;height:auto;display:block}} svg text{{fill:var(--muted);font-size:12px;font-family:var(--body)}} svg text.val{{fill:var(--ink);font-weight:600}}
+rect.hi{{fill:var(--accent)}} rect.lo{{fill:var(--bar)}} .grid{{stroke:var(--line)}} .zero{{stroke:var(--muted)}} .ref{{stroke:var(--muted);stroke-dasharray:4 4}}
+circle.won{{fill:var(--accent);fill-opacity:.8}} circle.ups{{fill:var(--upset);fill-opacity:.9}} circle.me{{stroke:var(--ink);stroke-width:2;fill-opacity:1}}
+.key{{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0}} .key i{{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}}
+ul{{margin:0;padding-left:1.1em}} li{{margin:3px 0}}
+@media print{{body{{background:#fff;font-size:11px}} main{{padding:0;gap:16px;max-width:none}} .wrap{{overflow:visible}} th,td{{white-space:normal;padding:3px 6px}} tr,.card,.bbox,.next,svg{{break-inside:avoid}} h2,h3{{break-after:avoid}}}}
+</style></head><body><main>
+<header>
+<h1>Lindale 4A Division I playoff tracker</h1>
+<div class="stamp">Odds as of {d}</div>
+<p><b>{e(fav['team'])}</b> is the title favorite at <b>{pct(fav['p_title'])}</b>. Lindale is at <b>{pct(lin['p_title'])}</b> to win state and <b>{pct(lin['p_region'])}</b> to win Region II.</p>
+<p class="lab">Odds are estimates from simulated brackets built on MaxPreps ratings. Single games swing a lot, so read them as rough chances, not predictions. This page is refreshed after each round's games.</p>
+</header>
+<section class="next">
+<div><span class="lab">Lindale's next game: {e(nx['round'])} round</span><span class="opp">{e(nx['opponent'])}</span><span>{e(nx['when'])}</span></div>
+<div><span class="lab">Site ({e(nx['site_status'])})</span><div>{e(nx['site'])}</div><span class="lab">{nx['capacity']:,} seats, about {nx['drive_miles']} miles and {e(nx['drive_time'])} from Lindale</span></div>
+<div><span class="big">{nx['win_prob']}%</span><span class="lab">Lindale's chance to win</span></div>
+</section>
+<section><h2>Lindale's chances, step by step</h2><div class="cards">{cards}</div></section>
+<section><h2>Lindale's path and site plan</h2>
+{table(['Round','When','Possible opponent',"Chance it's them",'Lindale wins','Earlier this season','Site','Site status','Seats','Miles','Drive'],[[r['round'],r['when'],r['opponent'],f"{r['opp_share']}%",f"{r['win_prob']}%",r['earlier'] or '—',r['site'],r['site_status'],f"{r['capacity']:,}" if r['capacity'] else '—',r['drive_miles'] or '—',r['drive_time'] or '—'] for r in path],num=(3,4,8,9),cls=lambda i:'g0 me' if i in firsts else '')}
+<p class="lab" style="margin-top:8px">"Chance it's them" assumes Lindale gets that far. "Set" sites are announced. "Suggested" sites are estimates of what Lindale might ask for. Miles and drive times from Lindale are approximate.</p></section>
+<section><h2>Region II bracket: chance to win each round</h2><div class="bracket">{col('Area round',2,'p_area',True)}{col('Regional round',4,'p_regional')}{col('Region final',8,'p_region')}</div></section>
+<div class="two">
+<section><h2>Title odds, top eight teams</h2>{barsvg}</section>
+<section><h2>Ratings vs. results so far</h2><p>Favorites have won <b>{sum(r['fav_won'] for r in results)}</b> of <b>{len(results)}</b> playoff games. The dashed line marks a perfect prediction.</p>
+<div class="key lab"><span><i style="background:var(--accent)"></i>Favorite won</span><span><i style="background:var(--upset)"></i>Upset</span></div>{scsvg}</section>
+</div>
+<section><h3>Upsets</h3><ul>{''.join(f"<li>{e(r['winner'])} {e(r['score'])} over {e(r['loser'])}, which was favored by {r['pred_margin']:g}</li>" for r in ups)}</ul></section>
+<section><h2>This round's games</h2>
+{table(['Region','Matchup','When','Site','Ratings favorite','Favorite wins'],[[r['region'],r['matchup'],r['when'],r['site'],r['favorite'],f"{r['fav_prob']}%"] for r in games],num=(5,),cls=lambda i:'me' if games[i]['lindale_path'] else '')}
+<p class="lab" style="margin-top:8px">Region II games, the ones on Lindale's side of the bracket, are in bold.</p></section>
+<section><h2>Previous results</h2><h3>Lindale's season</h3>
+<p>Lindale is <b>{w}-{n-w}</b>, scoring <b>{sum(r['points_for'] for r in season)/n:.1f}</b> points a game and allowing <b>{sum(r['points_against'] for r in season)/n:.1f}</b>.</p>
+{table(['Date','Opponent','Game type','Result','Margin'],[[r['date'],r['opponent'],r['type'],r['result'],f"{r['margin']:+d}"] for r in season],num=(4,))}
+<h3>Playoff results, all teams</h3>
+{table(['Round','Region','Winner','Score','Loser','Ratings call'],[[r['round'],r['region'],r['winner'],r['score'],r['loser'],r['ratings_call']] for r in results],cls=lambda i:('me ' if 'Lindale' in (results[i]['winner'],results[i]['loser']) else '')+('' if results[i]['fav_won'] else 'up'))}</section>
+<section><h2>Every team still alive</h2>
+{table(['Team','Record','Region','Rating','Win area','Win regional','Win region','Reach final','Win title'],[[r['team'],r['record'],r['region'],f"{r['rating']:.2f}",pct(r['p_area']),pct(r['p_regional']),pct(r['p_region']),pct(r['p_final']),pct(r['p_title'])] for r in odds],num=(3,4,5,6,7,8),cls=lambda i:'me' if odds[i]['team']=='Lindale' else '')}</section>
+</main></body></html>'''
+import os; os.makedirs('static',exist_ok=True); open('static/index.html','w').write(P); print(len(P))
