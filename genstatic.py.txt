@@ -106,7 +106,8 @@ main{{padding:20px 14px 40px;gap:24px}} h1{{font-size:2rem}}
 .stack tr.g0 td{{border-top:0}} .stack tr.g0{{border-top:2px solid var(--muted)}}
 .hm{{display:none}} .wrap:not(.stack) th,.wrap:not(.stack) td{{padding:7px 8px}} .wrap:not(.stack) th{{white-space:normal;font-size:.7rem}} .scatter{{display:none}} .only-small{{display:block}} .bracket{{grid-template-columns:1fr}} .hb{{grid-template-columns:84px 1fr 40px}}
 }}
-@media print{{nav{{display:none}} body{{background:#fff;font-size:11px}} main{{padding:0;gap:16px;max-width:none}} .wrap{{overflow:visible}} th,td{{white-space:normal;padding:3px 6px}} tr,.card,.bbox,.next,svg{{break-inside:avoid}} h2,h3{{break-after:avoid}}}}
+tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .tog button{{font:inherit;font-weight:600;color:var(--accent);background:none;border:0;padding:6px 0;cursor:pointer}} .tog button:hover{{text-decoration:underline}} td.tc::before{{display:none!important}}
+@media print{{tr[hidden]{{display:table-row!important}} .tog{{display:none}} nav{{display:none}} body{{background:#fff;font-size:11px}} main{{padding:0;gap:16px;max-width:none}} .wrap{{overflow:visible}} th,td{{white-space:normal;padding:3px 6px}} tr,.card,.bbox,.next,svg{{break-inside:avoid}} h2,h3{{break-after:avoid}}}}
 </style></head><body><main>
 <header>
 <h1>Lindale 4A Division I playoff tracker</h1>
@@ -123,7 +124,7 @@ main{{padding:20px 14px 40px;gap:24px}} h1{{font-size:2rem}}
 <section><h2>Lindale's chances, step by step</h2><div class="cards">{cards}</div></section>
 <section id="path"><h2>Lindale's path and site plan</h2>
 {table(['Round','When','Possible opponent',"Chance it's them",'Lindale wins','Site'],[pathrow(r) for r in path],num=(3,4),raw=(2,5),wrapc=(2,5),stack=True,cls=lambda i:'g0 me' if i in firsts else '')}
-<p class="lab" style="margin-top:8px">"Chance it's them" assumes Lindale gets that far. "Set" sites are announced. "Suggested" sites are estimates of what Lindale might ask for. Miles and drive times from Lindale are approximate.</p></section>
+<p class="lab" style="margin-top:8px">The most likely opponent is shown for each round; use the buttons to see the rest. "Chance it's them" assumes Lindale gets that far. "Set" sites are announced. "Suggested" sites are estimates of what Lindale might ask for. Miles and drive times from Lindale are approximate.</p></section>
 <section id="bracket"><h2>Region II bracket: chance to win each round</h2><div class="bracket">{col('Area round',2,'p_area',True)}{col('Regional round',4,'p_regional')}{col('Region final',8,'p_region')}</div></section>
 <div class="two" id="charts">
 <section><h2>Title odds, top eight teams</h2>{barsvg}<h3>Upsets</h3><ul>{''.join(f"<li>{e(r['winner'])} {e(r['score'])} over {e(r['loser'])}, which was favored by {r['pred_margin']:g}</li>" for r in ups)}</ul></section>
@@ -140,5 +141,14 @@ main{{padding:20px 14px 40px;gap:24px}} h1{{font-size:2rem}}
 {table(['Round','Region','Winner','Score','Loser','Ratings call'],[[r['round'],r['region'],r['winner'],r['score'],r['loser'],r['ratings_call']] for r in results],stack=True,cls=lambda i:('me ' if 'Lindale' in (results[i]['winner'],results[i]['loser']) else '')+('' if results[i]['fav_won'] else 'up'))}</section>
 <section><h2>Every team still alive</h2>
 {table(['Team','Record','Region','Rating','Win area','Win regional','Win region','Reach final','Win title'],[[r['team'],r['record'],r['region'],f"{r['rating']:.2f}",pct(r['p_area']),pct(r['p_regional']),pct(r['p_region']),pct(r['p_final']),pct(r['p_title'])] for r in odds],num=(3,4,5,6,7,8),hm=(1,2,3,4,5),cls=lambda i:'me' if odds[i]['team']=='Lindale' else '')}</section>
-</main></body></html>'''
+</main>
+<script>
+(function(){{var tb=document.querySelector("#path tbody");if(!tb)return;
+var g,groups=[];[].slice.call(tb.rows).forEach(function(r){{if(r.classList.contains("g0")){{g=[r];groups.push(g)}}else g.push(r)}});
+groups.forEach(function(g){{if(g.length<2)return;var others=g.slice(1),tr=document.createElement("tr"),td=document.createElement("td"),b=document.createElement("button");
+tr.className="tog";td.colSpan=6;td.className="w tc";b.type="button";
+function set(open){{others.forEach(function(r){{r.hidden=!open}});b.setAttribute("aria-expanded",open?"true":"false");b.textContent=open?"Hide the other opponents":"Show "+others.length+" other possible opponent"+(others.length>1?"s":"")}}
+b.onclick=function(){{set(b.getAttribute("aria-expanded")!=="true")}};set(false);td.appendChild(b);tr.appendChild(td);g[0].parentNode.insertBefore(tr,g[0].nextSibling)}})}})();
+</script>
+</body></html>'''
 import os; os.makedirs('static',exist_ok=True); open('static/index.html','w').write(P); print(len(P))
