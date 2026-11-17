@@ -52,6 +52,154 @@ def col(title,size,f,keep=False):
 steps=[('p_area','Win the area round'),('p_regional','Reach the region final'),('p_region','Win Region II'),('p_final','Reach the state final'),('p_title','Win the state title')]
 cards=''.join(f'<div class="card"><span class="big">{pct(lin[f])}</span><span>{n}</span>{"<span class=lab>"+chg(f)+"</span>" if chg(f) else ""}</div>' for f,n in steps)
 firsts={i for i,r in enumerate(path) if i==0 or path[i-1]['round']!=r['round']}
+
+# WATCH: hand-researched players and things to watch; refresh runs edit this JSON text, not a data file.
+watch=json.loads(r'''{
+"rows": [
+{
+"kind": "lindale",
+"name": "QB David Lindig (Jr)",
+"line": "94-151, 1,441 yds, 20 TD, 3 INT; 55 carries, 316 yds, 5 TD through 10 games. 26 career wins as starter, a school record."
+},
+{
+"kind": "lindale",
+"name": "RB Hank Thurman (Jr)",
+"line": "191 carries, 1,367 yds, 22 TD before missing the Jacksonville game; ran for 324 yds and 4 TD against Kilgore. Check whether he is at full strength."
+},
+{
+"kind": "lindale",
+"name": "RB/CB Andre Foster (Sr)",
+"line": "Stepped in for Thurman with 216 yds vs Palestine and 176 yds, 4 TD vs Jacksonville. Season: 79 carries, 722 yds, 10 TD, plus 3 INT on defense."
+},
+{
+"kind": "lindale",
+"name": "TE Reed Carnathan (Jr)",
+"line": "32 catches, 541 yds, 11 TD; also 43 tackles, 4 sacks, 7 TFL. Returned an interception 89 yds for a TD vs Kaufman."
+},
+{
+"kind": "lindale",
+"name": "LB Lincoln Laing (Jr)",
+"line": "114.5 tackles, 6.5 sacks, 8 TFL through 10 games; 11.5 tackles vs Kaufman."
+},
+{
+"kind": "lindale",
+"name": "DT Camden Beason / LB Judson Beeler",
+"line": "Beason leads a defensive line coach Cochran calls a strength. Beeler: 39 tackles, 6 TFL, 2 sacks (before Kaufman), then 10 tackles and 4 TFL vs Kaufman."
+},
+{
+"kind": "lindale",
+"name": "Also: WR Carter Hill, WR Kaden Fowler, K Mason Malone",
+"line": "Hill: 17 catches, 215 yds, 4 TD. Malone kicks PATs and field goals (30-yarder vs Kaufman)."
+},
+{
+"kind": "opp",
+"team": "Wilmer-Hutchins",
+"round": "Area",
+"record": "9-2",
+"players": "Named players not found in sources. Roster lists QBs Corderio Dunn (Sr) and Chad Buckner (So), WR Jaheim Cummings and Kevin Allison.",
+"watch": [
+"Beat Fort Worth Eastern Hills 33-28 in bi-district while out-gained 305 to 211 yards, so they win close games.",
+"Lost 56-22 to Dallas Kimball and 39-32 to Carrollton Turner earlier. They can give up points.",
+"Went 2-8 in 2025, so this is a big turnaround. Limited info beyond that."
+]
+},
+{
+"kind": "opp",
+"team": "Henderson",
+"round": "Regional",
+"record": "6-5",
+"players": "QB Blake Meeks (So), WR Brailon Walker (Sr), WR Aumaz Jackson, RB Michael Russell (So), DL Kartavious Muckleroy (63 tackles, 10 TFL), LB Cordaveon Walton, K Ivan Navarro.",
+"watch": [
+"Lindale won 29-21 at Henderson on Sep 25, a one-score game.",
+"Beat Sulphur Springs 34-31 in bi-district. First playoff trip since 2019.",
+"Walker is the top target (7 catches for 93 yds vs Pine Tree). Pass defense decides this one."
+]
+},
+{
+"kind": "opp",
+"team": "Kimball",
+"round": "Regional",
+"record": "9-2",
+"players": "Named players not found in sources.",
+"watch": [
+"Won 49-14 over Benbrook in bi-district.",
+"Beat Wilmer-Hutchins 56-22 earlier this season. Limited info beyond scores.",
+"Our read: likely the stronger Dallas-area opponent."
+]
+},
+{
+"kind": "opp",
+"team": "Pine Tree",
+"round": "Region final",
+"record": "8-3",
+"players": "QB Colton Croft (Sr, 6-4), WR Bosston Johnson (Sr, 7 INT, also a kick returner), RB Jakaiden Johnson (So, 222 yds vs Caddo Mills), RB Ja'Karius Timmons, TE/WR Ashton Valentine.",
+"watch": [
+"Lindale beat them 45-21 at Pine Tree on Oct 16.",
+"Bosston Johnson scored on a 65-yard kickoff return and had 140 receiving yds vs Henderson. Cover kicks carefully.",
+"Defense has picked off a pass in 10 straight games. Croft threw 4 TD vs Henderson."
+]
+},
+{
+"kind": "opp",
+"team": "Paris",
+"round": "Region final",
+"record": "6-5",
+"players": "QB Tyler Heath (3-yr starter, 2,890 yds, 33 TD, 470 rush yds), WR Jakabrian Record (42 catches, 794 yds; also plays safety), WR Fabian Brown (712 yds, 10 TD), WR Marquis Shelton.",
+"watch": [
+"Spread passing team. Heath is dangerous on the run too.",
+"Won 5 of last 6 after an 0-4 start. Beat Kilgore 28-21 in bi-district.",
+"Lost 69-49 to Sulphur Springs, so they give up points."
+]
+},
+{
+"kind": "opp",
+"team": "Kennedale",
+"round": "Region final",
+"record": "10-1",
+"players": "RB Zarrian Carliss (64-yard TD run vs Eastern Hills), RB Ayden Turner, K Bennett Markham.",
+"watch": [
+"Wing-T offense that kills clock. It will shorten the game.",
+"District champion. Beat Dallas Carter 34-28 in overtime.",
+"Coach Richard Barrett has made the playoffs every year since 2001."
+]
+},
+{
+"kind": "opp",
+"team": "Lincoln",
+"round": "Region final",
+"record": "9-2",
+"players": "Named players not found in sources.",
+"watch": [
+"Beat Fort Worth Southwest 45-0 in bi-district.",
+"Limited info beyond scores."
+]
+},
+{
+"kind": "opp",
+"team": "Stephenville",
+"round": "State final (if both advance)",
+"record": "11-0",
+"players": "Roster only; no stat leaders found for 2026.",
+"watch": [
+"Listed No. 1 in Dave Campbell's 4A DI ranking.",
+"Went 16-0 in 2025. Won bi-district 51-14 over Navasota."
+]
+}
+]
+}''')['rows']
+def _li(xs): return ''.join(f'<li>{e(x)}</li>' for x in xs)
+mine=''.join(f'<div class="pl"><b>{e(r["name"])}</b><span>{e(r["line"])}</span></div>' for r in watch if r['kind']=='lindale')
+_pm={}
+for r in path:
+    _pm.setdefault(r['opponent'],r)
+_rounds=[]
+for r in watch:
+    if r['kind']!='opp': continue
+    p=_pm.get(r['team'])
+    chip=(f'<span class="chip">{p["opp_share"]}% chance it\'s them</span><span class="chip">Lindale wins {p["win_prob"]}%</span>' if p else '')
+    first=not _rounds
+    _rounds.append(f'<details class="wc"{" open" if first else ""}><summary><b>{e(r["team"])}</b> <span class="rd">{e(r["round"])} · {e(r["record"])}</span>{chip}</summary><p class="pp"><b>Players:</b> {e(r["players"])}</p><ul>{_li(r["watch"])}</ul></details>')
+watchhtml=''.join(_rounds)
 ups=sorted([r for r in results if not r['fav_won']],key=lambda r:-r['pred_margin'])
 w=sum(1 for r in season if r['margin']>0); n=len(season)
 P=f'''<!DOCTYPE html>
@@ -103,6 +251,7 @@ td.w{{white-space:normal;min-width:150px}} td small{{display:block;color:var(--m
 .bracket{{align-items:stretch}} .bcol{{display:flex;flex-direction:column;gap:6px}} .bbody{{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:10px}}
 .hbars{{display:grid;gap:7px}} .hb{{display:grid;grid-template-columns:96px 1fr 44px;gap:10px;align-items:center;font-size:.9rem}} .hb b{{text-align:right;font-variant-numeric:tabular-nums}}
 .track{{background:transparent;height:16px;display:block}} .track i{{display:block;height:100%;background:var(--bar);border-radius:3px}} .hb.me{{font-weight:600}} .hb.me .track i{{background:var(--accent)}}
+.pl{{display:grid;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}} .pl b{{color:var(--accent)}} .pl span{{font-size:.9rem;color:var(--muted)}} .plg{{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}} .wc{{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:0 14px;margin-top:8px}} .wc summary{{cursor:pointer;padding:12px 0;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}} .wc .rd{{color:var(--muted);font-size:.85rem}} .chip{{font-size:.75rem;border:1px solid var(--line);border-radius:99px;padding:1px 8px}} .wc ul{{margin:4px 0 12px 18px;padding:0}} .wc li{{margin:3px 0}} .pp{{margin:0 0 6px;font-size:.92rem}}
 .only-small{{display:none}}
 @media (max-width:640px){{
 main{{padding:20px 14px 40px;gap:24px}} h1{{font-size:1.7rem}} .logo{{width:68px}} .brand{{gap:12px}}
@@ -119,7 +268,7 @@ tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .to
 <header>
 <div class="brand"><img class="logo" src="{LOGO}" alt="Lindale Eagles logo: an eagle inside an outline of Texas" width="104" height="104"><div><h1>Lindale 4A Division&nbsp;I playoff tracker</h1>
 <div class="stamp">Odds as of {d}</div></div></div>
-<nav aria-label="Page sections"><a href="#next">Next game</a><a href="#path">Path</a><a href="#bracket">Bracket</a><a href="#charts">Charts</a><a href="#games">This round</a><a href="#results">Results</a></nav>
+<nav aria-label="Page sections"><a href="#next">Next game</a><a href="#path">Path</a><a href="#watch">Players</a><a href="#bracket">Bracket</a><a href="#charts">Charts</a><a href="#games">This round</a><a href="#results">Results</a></nav>
 <p><b>{e(fav['team'])}</b> is the title favorite at <b>{pct(fav['p_title'])}</b>. Lindale is at <b>{pct(lin['p_title'])}</b> to win state and <b>{pct(lin['p_region'])}</b> to win&nbsp;Region&nbsp;II.</p>
 <p class="lab">Odds are estimates from simulated brackets built on MaxPreps ratings. Single games swing a lot, so read them as rough chances, not predictions. This page is refreshed after each round's games.</p>
 </header>
@@ -132,6 +281,7 @@ tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .to
 <section id="path"><h2>Lindale's path and site plan</h2>
 {table(['Round','When','Possible opponent',"Chance it's them",'Lindale wins','Site'],[pathrow(r) for r in path],num=(3,4),raw=(2,5),wrapc=(2,5),stack=True,cls=lambda i:'g0 me' if i in firsts else '')}
 <p class="lab" style="margin-top:8px">The most likely opponent is shown for each round; use the buttons to see the rest. "Chance it's them" assumes Lindale gets that far. "Set" sites are announced. "Suggested" sites are estimates of what Lindale might ask for. Miles and drive times from Lindale are approximate.</p></section>
+<section id="watch"><h2>Players and what to watch</h2><h3 style="margin:0 0 8px;font-size:1rem">Lindale key players</h3><div class="plg">{mine}</div><h3 style="margin:16px 0 0;font-size:1rem">Possible opponents</h3>{watchhtml}<p class="lab" style="margin-top:8px">Stats come from local news reports (Tyler Morning Telegraph, ETBlitz, Longview News-Journal, Henderson News) through Nov 16. Where no named players turned up in sources, the card says so. Most teams only have box scores, so this is not a scouting report. Updated by hand after each round.</p></section>
 <section id="bracket"><h2>Region II bracket: chance to win each round</h2><div class="bracket">{col('Area round',2,'p_area',True)}{col('Regional round',4,'p_regional')}{col('Region final',8,'p_region')}</div></section>
 <div class="two" id="charts">
 <section><h2>Title odds, top eight teams</h2>{barsvg}<h3>Upsets</h3><ul>{''.join(f"<li>{e(r['winner'])} {e(r['score'])} over {e(r['loser'])}, which was favored by {r['pred_margin']:g}</li>" for r in ups)}</ul></section>
