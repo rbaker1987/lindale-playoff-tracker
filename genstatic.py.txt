@@ -97,7 +97,7 @@ p{{margin:0 0 8px;max-width:70ch;text-wrap:pretty}} section{{min-width:0}}
 .cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}}
 .card{{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:4px}}
 .wrap{{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px}}
-table{{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:.88rem}}
+.tw{{overflow-x:auto}} table{{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:.88rem}}
 th,td{{text-align:left;padding:7px 11px;border-bottom:1px solid var(--line);white-space:nowrap}}
 tbody tr:last-child td{{border-bottom:0}}
 th{{color:var(--muted);font-weight:600;font-size:.76rem;text-transform:uppercase;letter-spacing:.04em}}
@@ -136,7 +136,7 @@ tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .to
 <header>
 <div class="brand"><img class="logo" src="{LOGO}" alt="Lindale Eagles logo: an eagle inside an outline of Texas" width="104" height="104"><div><h1>Lindale 4A Division&nbsp;I playoff tracker</h1>
 <div class="stamp">Odds as of {d}</div></div></div>
-<nav aria-label="Page sections"><a href="#next">Next game</a><a href="#path">Path</a><a href="#watch">Players</a><a href="#bracket">Bracket</a><a href="#charts">Charts</a><a href="#games">This round</a><a href="#results">Results</a></nav>
+<nav aria-label="Page sections"><a href="#next">Next game</a><a href="#weather">Weather</a><a href="#path">Path</a><a href="#watch">Players</a><a href="#bracket">Bracket</a><a href="#charts">Charts</a><a href="#games">This round</a><a href="#results">Results</a></nav>
 <p><b>{e(fav['team'])}</b> is the title favorite at <b>{pct(fav['p_title'])}</b>. Lindale is at <b>{pct(lin['p_title'])}</b> to win state and <b>{pct(lin['p_region'])}</b> to win&nbsp;Region&nbsp;II.</p>
 <p class="lab">Odds are estimates from simulated brackets built on MaxPreps ratings. Single games swing a lot, so read them as rough chances, not predictions. This page is refreshed after each round's games.</p>
 </header>
@@ -146,6 +146,7 @@ tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .to
 <div><span class="big">{nx['win_prob']}%</span><span class="lab">Lindale's chance to win</span></div>
 </section>
 <section><h2>Lindale's chances, step by step</h2><div class="cards">{cards}</div></section>
+<section id="weather"><h2>Game-night weather and what to wear</h2><p><b>Clear, dry and mild at Forney City Bank Stadium.</b> Kickoff is about 65°F with no rain, a light southeast breeze and clear skies. It cools to about 60° by the fourth quarter. Humidity climbs to the high 80s late, so it will feel damp once the sun is down.</p><div class="tw"><table><thead><tr><th>Time</th><th>Temp</th><th>Feels like</th><th>Wind</th><th>Gusts</th></tr></thead><tbody><tr><td>6 PM</td><td>68°</td><td>65°</td><td>6 mph SSE</td><td>10 mph</td></tr><tr><td>7 PM (kickoff)</td><td>65°</td><td>64°</td><td>6 mph SSE</td><td>9 mph</td></tr><tr><td>8 PM</td><td>62°</td><td>61°</td><td>6 mph SE</td><td>9 mph</td></tr><tr><td>9 PM</td><td>60°</td><td>59°</td><td>6 mph SE</td><td>7 mph</td></tr><tr><td>10 PM</td><td>60°</td><td>59°</td><td>5 mph SE</td><td>6 mph</td></tr></tbody></table></div><h3 style="margin:12px 0 4px;font-size:1rem">What to wear</h3><ul style="margin:0 0 8px;padding-left:18px"><li>Short sleeves or a light long-sleeve shirt, plus a hoodie or light jacket for after dark. Sunset is 5:22 PM, so most of the game is in the dark.</li><li>Jeans or pants. Shorts are fine early but will feel cool by halftime.</li><li>No rain gear needed (0% chance all night). Metal bleachers may feel damp from the humidity, so bring a stadium seat cushion or a towel.</li><li>Afternoon highs hit the mid 70s, so leave heavy coats at home. Bands and anyone staying on the field should bring one extra layer.</li></ul><p class="lab">Forecast from AccuWeather for Forney, TX as of 2:20 PM CT Fri Nov 20. Check again before you leave; this section describes tonight only and is not updated automatically.</p></section>
 <section id="path"><h2>Lindale's path and site plan</h2>
 {table(['Round','When','Possible opponent',"Chance it's them",'Lindale wins','Site'],[pathrow(r) for r in path],num=(3,4),raw=(2,5),wrapc=(2,5),stack=True,cls=lambda i:'g0 me' if i in firsts else '')}
 <p class="lab" style="margin-top:8px">The most likely opponent is shown for each round; use the buttons to see the rest. "Chance it's them" assumes Lindale gets that far. "Set" sites are announced. "Suggested" sites are estimates of what Lindale might ask for. Miles and drive times from Lindale are approximate.</p></section>
