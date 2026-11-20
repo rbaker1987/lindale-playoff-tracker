@@ -60,14 +60,18 @@ mine=''.join(f'<div class="pl"><b>{e(r["name"])}</b><span>{e(r["line"])}</span><
 _pm={}
 for r in path:
     _pm.setdefault(r['opponent'],r)
-_rounds=[]
-for r in watch:
-    if r['kind']!='opp': continue
+_nx=path[0]['opponent'] if path else None
+def _tcard(r,nxt=False):
     p=_pm.get(r['team'])
-    chip=(f'<span class="chip">{p["opp_share"]}% chance it\'s them</span><span class="chip">Lindale wins {p["win_prob"]}%</span>' if p else '')
-    first=not _rounds
-    _rounds.append(f'<details class="wc"{" open" if first else ""}><summary><b>{e(r["team"])}</b> <span class="rd">{e(r["round"])} · {e(r["record"])}</span>{chip}</summary><p class="pp"><b>Players:</b> {e(r["players"])}</p><ul>{_li(r["watch"])}</ul></details>')
-watchhtml=''.join(_rounds)
+    if nxt: chip=(f'<span class="chip">Lindale wins {p["win_prob"]}%</span>' if p else '')
+    else: chip=(f'<span class="chip">{p["opp_share"]}% chance it\'s them</span><span class="chip">Lindale wins {p["win_prob"]}%</span>' if p else '')
+    return (f'<div class="tc{" nx" if nxt else ""}"><div class="th"><b>{e(r["team"])}</b><span class="rd">{e(r["round"])} · {e(r["record"])}</span></div>'
+      f'<div class="chips">{chip}</div><p class="pp"><b>Players:</b> {e(r["players"])}</p><ul>{_li(r["watch"])}</ul></div>')
+_opp=[r for r in watch if r['kind']=='opp']
+nextcards=''.join(_tcard(r,True) for r in _opp if r['team']==_nx)
+futcards=''.join(_tcard(r) for r in _opp if r['team']!=_nx)
+watchhtml=((f'<h3 style="margin:16px 0 8px;font-size:1rem">Next opponent</h3><div class="tg">{nextcards}</div>' if nextcards else '')
+  +(f'<h3 style="margin:16px 0 8px;font-size:1rem">Possible future opponents</h3><div class="tg">{futcards}</div>' if futcards else ''))
 wx=json.loads(r'''{"game": "Lindale vs Wilmer-Hutchins, area round", "when": "Fri Nov 20, 7 p.m. kickoff", "site": "Forney City Bank Stadium, Forney", "site_status": "Set", "as_of": "2:20 PM CT Fri Nov 20", "source": "AccuWeather for Forney, TX", "sunset": "5:22 PM", "headline": "Clear, dry and mild at Forney City Bank Stadium. Kickoff is about 65°F with no rain, a light southeast breeze and clear skies. It cools to about 60° by the fourth quarter. Humidity climbs to the high 80s late, so it will feel damp once the sun is down.", "rows": [["6 PM", "68°", "65°", "6 mph SSE", "10 mph"], ["7 PM (kickoff)", "65°", "64°", "6 mph SSE", "9 mph"], ["8 PM", "62°", "61°", "6 mph SE", "9 mph"], ["9 PM", "60°", "59°", "6 mph SE", "7 mph"], ["10 PM", "60°", "59°", "5 mph SE", "6 mph"]], "wear": ["Short sleeves or a light long-sleeve shirt, plus a hoodie or light jacket for after dark. Sunset is 5:22 PM, so most of the game is in the dark.", "Jeans or pants. Shorts are fine early but will feel cool by halftime.", "No rain gear needed (0% chance all night). Metal bleachers may feel damp from the humidity, so bring a stadium seat cushion or a towel.", "Afternoon highs hit the mid 70s, so leave heavy coats at home. Bands and anyone staying on the field should bring one extra layer."]}''')
 def _wxsec(w):
     cols=w.get('cols') or ['Time','Temp','Feels like','Wind','Gusts']
@@ -131,7 +135,7 @@ td.w{{white-space:normal;min-width:150px}} td small{{display:block;color:var(--m
 .bracket{{align-items:stretch}} .bcol{{display:flex;flex-direction:column;gap:6px}} .bbody{{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:10px}}
 .hbars{{display:grid;gap:7px}} .hb{{display:grid;grid-template-columns:96px 1fr 44px;gap:10px;align-items:center;font-size:.9rem}} .hb b{{text-align:right;font-variant-numeric:tabular-nums}}
 .track{{background:transparent;height:16px;display:block}} .track i{{display:block;height:100%;background:var(--bar);border-radius:3px}} .hb.me{{font-weight:600}} .hb.me .track i{{background:var(--accent)}}
-.pl{{display:grid;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}} .pl b{{color:var(--accent)}} .pl span{{font-size:.9rem;color:var(--muted)}} .plg{{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}} .wc{{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:0 14px;margin-top:8px}} .wc summary{{cursor:pointer;padding:12px 0;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}} .wc .rd{{color:var(--muted);font-size:.85rem}} .chip{{font-size:.75rem;border:1px solid var(--line);border-radius:99px;padding:1px 8px}} .wc ul{{margin:4px 0 12px 18px;padding:0}} .wc li{{margin:3px 0}} .pp{{margin:0 0 6px;font-size:.92rem}}
+.pl{{display:grid;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}} .pl b{{color:var(--accent)}} .pl span{{font-size:.9rem;color:var(--muted)}} .plg,.tg{{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:8px;align-items:start}} .pl,.tc{{min-width:0;overflow-wrap:anywhere}} .tc{{display:grid;gap:4px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}} .tc.nx{{grid-column:1/-1;border-color:var(--accent)}} .tc .th{{display:flex;flex-wrap:wrap;gap:2px 10px;align-items:baseline}} .tc .th b{{color:var(--accent)}} .tc .chips{{display:flex;flex-wrap:wrap;gap:6px}} .tc ul{{margin:2px 0 0 18px;padding:0}} .tc li{{margin:3px 0}} .wc{{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:0 14px;margin-top:8px}} .wc summary{{cursor:pointer;padding:12px 0;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}} .wc .rd{{color:var(--muted);font-size:.85rem}} .chip{{font-size:.75rem;border:1px solid var(--line);border-radius:99px;padding:1px 8px}} .wc ul{{margin:4px 0 12px 18px;padding:0}} .wc li{{margin:3px 0}} .pp{{margin:0 0 6px;font-size:.92rem}}
 .only-small{{display:none}}
 @media (max-width:640px){{
 main{{padding:20px 14px 40px;gap:24px}} h1{{font-size:1.7rem}} .logo{{width:68px}} .brand{{gap:12px}}
@@ -161,7 +165,7 @@ tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .to
 {wxhtml}<section id="path"><h2>Lindale's path and site plan</h2>
 {table(['Round','When','Possible opponent',"Chance it's them",'Lindale wins','Site'],[pathrow(r) for r in path],num=(3,4),raw=(2,5),wrapc=(2,5),stack=True,cls=lambda i:'g0 me' if i in firsts else '')}
 <p class="lab" style="margin-top:8px">The most likely opponent is shown for each round; use the buttons to see the rest. "Chance it's them" assumes Lindale gets that far. "Set" sites are announced. "Suggested" sites are estimates of what Lindale might ask for. Miles and drive times from Lindale are approximate.</p></section>
-<section id="watch"><h2>Players and what to watch</h2><h3 style="margin:0 0 8px;font-size:1rem">Lindale key players</h3><div class="plg">{mine}</div><h3 style="margin:16px 0 0;font-size:1rem">Possible opponents</h3>{watchhtml}<p class="lab" style="margin-top:8px">Stats come from local news reports (Tyler Morning Telegraph, ETBlitz, Longview News-Journal, Henderson News) through Nov 19. Where no named players turned up in sources, the card says so. Most teams only have box scores, so this is not a scouting report. Updated by hand after each round.</p></section>
+<section id="watch"><h2>Players and what to watch</h2><h3 style="margin:0 0 8px;font-size:1rem">Lindale key players</h3><div class="plg">{mine}</div>{watchhtml}<p class="lab" style="margin-top:8px">Stats come from local news reports (Tyler Morning Telegraph, ETBlitz, Longview News-Journal, Henderson News) through Nov 19. Where no named players turned up in sources, the card says so. Most teams only have box scores, so this is not a scouting report. Updated by hand after each round.</p></section>
 <section id="bracket"><h2>Region II bracket: chance to win each round</h2><div class="bracket">{col('Area round',2,'p_area',True)}{col('Regional round',4,'p_regional')}{col('Region final',8,'p_region')}</div></section>
 <div class="two" id="charts">
 <section><h2>Title odds, top eight teams</h2>{barsvg}<h3>Upsets</h3><ul>{''.join(f"<li>{e(r['winner'])} {e(r['score'])} over {e(r['loser'])}, which was favored by {r['pred_margin']:g}</li>" for r in ups)}</ul></section>
