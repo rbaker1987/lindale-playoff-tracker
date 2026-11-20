@@ -70,14 +70,16 @@ for r in watch:
 watchhtml=''.join(_rounds)
 wx=json.loads(r'''{"game": "Lindale vs Wilmer-Hutchins, area round", "when": "Fri Nov 20, 7 p.m. kickoff", "site": "Forney City Bank Stadium, Forney", "site_status": "Set", "as_of": "2:20 PM CT Fri Nov 20", "source": "AccuWeather for Forney, TX", "sunset": "5:22 PM", "headline": "Clear, dry and mild at Forney City Bank Stadium. Kickoff is about 65°F with no rain, a light southeast breeze and clear skies. It cools to about 60° by the fourth quarter. Humidity climbs to the high 80s late, so it will feel damp once the sun is down.", "rows": [["6 PM", "68°", "65°", "6 mph SSE", "10 mph"], ["7 PM (kickoff)", "65°", "64°", "6 mph SSE", "9 mph"], ["8 PM", "62°", "61°", "6 mph SE", "9 mph"], ["9 PM", "60°", "59°", "6 mph SE", "7 mph"], ["10 PM", "60°", "59°", "5 mph SE", "6 mph"]], "wear": ["Short sleeves or a light long-sleeve shirt, plus a hoodie or light jacket for after dark. Sunset is 5:22 PM, so most of the game is in the dark.", "Jeans or pants. Shorts are fine early but will feel cool by halftime.", "No rain gear needed (0% chance all night). Metal bleachers may feel damp from the humidity, so bring a stadium seat cushion or a towel.", "Afternoon highs hit the mid 70s, so leave heavy coats at home. Bands and anyone staying on the field should bring one extra layer."]}''')
 def _wxsec(w):
+    cols=w.get('cols') or ['Time','Temp','Feels like','Wind','Gusts']
     t=''.join('<tr>'+''.join(f'<td>{e(c)}</td>' for c in r)+'</tr>' for r in w['rows'])
     li=''.join(f'<li>{e(x)}</li>' for x in w['wear'])
     return (f'<section id="weather"><h2>Game-night weather and what to wear</h2>'
       f'<p class="lab" style="margin:0 0 6px">{e(w["game"])} · {e(w["when"])} · {e(w["site"])}{"" if w["site_status"]=="Set" else " (site suggested, not announced)"}</p>'
-      f'<p>{e(w["headline"])}</p><div class="tw"><table><thead><tr><th>Time</th><th>Temp</th><th>Feels like</th><th>Wind</th><th>Gusts</th></tr></thead><tbody>{t}</tbody></table></div>'
-      f'<h3 style="margin:12px 0 4px;font-size:1rem">What to wear</h3><ul style="margin:0 0 8px;padding-left:18px">{li}</ul>'
+      f'<p>{e(w["headline"])}</p>{('<div class="tw"><table><thead><tr>'+''.join('<th>'+e(c)+'</th>' for c in cols)+'</tr></thead><tbody>'+t+'</tbody></table></div>') if w['rows'] else ''}'
+      f'{("<h3 style=\"margin:12px 0 4px;font-size:1rem\">What to wear</h3><ul style=\"margin:0 0 8px;padding-left:18px\">"+li+"</ul>") if w["wear"] else ""}'
       f'<p class="lab">Forecast from {e(w["source"])} as of {e(w["as_of"])}. Refreshed with each tracker update; check again before you leave.</p></section>\n')
-wxhtml=_wxsec(wx)
+wxhtml=_wxsec(wx) if wx else ''
+wxnav='<a href="#weather">Weather</a>' if wx else ''
 ups=sorted([r for r in results if not r['fav_won']],key=lambda r:-r['pred_margin'])
 w=sum(1 for r in season if r['margin']>0); n=len(season)
 P=f'''<!DOCTYPE html>
@@ -146,7 +148,7 @@ tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .to
 <header>
 <div class="brand"><img class="logo" src="{LOGO}" alt="Lindale Eagles logo: an eagle inside an outline of Texas" width="104" height="104"><div><h1>Lindale 4A Division&nbsp;I playoff tracker</h1>
 <div class="stamp">Odds as of {d}</div></div></div>
-<nav aria-label="Page sections"><a href="#next">Next game</a><a href="#weather">Weather</a><a href="#path">Path</a><a href="#watch">Players</a><a href="#bracket">Bracket</a><a href="#charts">Charts</a><a href="#games">This round</a><a href="#results">Results</a></nav>
+<nav aria-label="Page sections"><a href="#next">Next game</a>{wxnav}<a href="#path">Path</a><a href="#watch">Players</a><a href="#bracket">Bracket</a><a href="#charts">Charts</a><a href="#games">This round</a><a href="#results">Results</a></nav>
 <p><b>{e(fav['team'])}</b> is the title favorite at <b>{pct(fav['p_title'])}</b>. Lindale is at <b>{pct(lin['p_title'])}</b> to win state and <b>{pct(lin['p_region'])}</b> to win&nbsp;Region&nbsp;II.</p>
 <p class="lab">Odds are estimates from simulated brackets built on MaxPreps ratings. Single games swing a lot, so read them as rough chances, not predictions. This page is refreshed after each round's games.</p>
 </header>
