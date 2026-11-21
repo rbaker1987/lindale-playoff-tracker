@@ -38,22 +38,33 @@ odds=[{'team':t,'slot':teams.index(t),'record':REC[t],'region':region(t),'rating
 odds=[r for r in odds if r['team'] not in DEC.values()]
 odds.sort(key=lambda r:(-cnt['title'][r['team']],-r['rating']))
 SITE={'Wilmer-Hutchins':('City Bank Stadium, Forney','Set'),'Henderson':('Rose Stadium, Tyler','Set'),
-'Kimball':('East Texas A&M, Commerce','Suggested'),'Pine Tree':('Rose Stadium, Tyler','Suggested'),
+'Kimball':('East Texas A&M, Commerce','Suggested'),'Pine Tree':('Rose Stadium, Tyler (or Kilgore)','Suggested'),
 'Paris':('East Texas A&M, Commerce','Suggested'),'Lincoln':('Mesquite Memorial Stadium','Suggested'),'Kennedale':('Newsom Stadium, Mansfield','Suggested'),
-'Andress':("Shotwell Stadium, Abilene",'Suggested'),'Decatur':("Baylor's McLane Stadium, Waco",'Suggested'),'Aubrey':("Baylor's McLane Stadium, Waco",'Suggested'),
-'Springtown':("Baylor's McLane Stadium, Waco",'Suggested'),'Lake Dallas':("Baylor's McLane Stadium, Waco",'Suggested'),
+'Andress':("Shotwell Stadium, Abilene",'Suggested'),'Decatur':('Fort Worth area stadium','Suggested'),'Aubrey':('Fort Worth area stadium','Suggested'),
+'Springtown':('Fort Worth area stadium','Suggested'),'Lake Dallas':('Fort Worth area stadium','Suggested'),
 'West Plains':('Memorial Stadium, Wichita Falls','Suggested'),'Randall':('Memorial Stadium, Wichita Falls','Suggested'),'Canyon':('Memorial Stadium, Wichita Falls','Suggested')}
 WHEN={'area':'Fri Nov 20, 7 p.m.','regional':'Fri Nov 27, 7 p.m.','region':'Dec 3-5','semi':'Dec 10-12','title':'Sat Dec 19, 3 p.m.'}
 RN={'area':'Area','regional':'Regional','region':'Region final','semi':'State semifinal','title':'State final'}
 # Site facts: (capacity, approx. one-way road miles from Lindale, approx. drive time). Miles and times are Claude's estimates.
 FACT={'Nacogdoches (SFA) or Rose Stadium, Tyler':(None,'15-85','20m-1h 40m'),'City Bank Stadium, Forney':(8500,70,'1h 05m'),"SFA's Homer Bryce Stadium, Nacogdoches":(14575,85,'1h 40m'),'East Texas A&M, Commerce':(11582,85,'1h 35m'),
 'Mesquite Memorial Stadium':(19400,80,'1h 15m'),'Shotwell Stadium, Abilene':(15075,280,'4h 10m'),"Baylor's McLane Stadium, Waco":(45140,150,'2h 30m'),
-'Memorial Stadium, Wichita Falls':(14500,225,'3h 40m'),'AT&T Stadium, Arlington':(80000,115,'1h 45m'),'Rose Stadium, Tyler':(10566,15,'20m'),'Newsom Stadium, Mansfield':(11000,110,'1h 40m')}
+'Memorial Stadium, Wichita Falls':(14500,225,'3h 40m'),'AT&T Stadium, Arlington':(80000,115,'1h 45m'),'Rose Stadium, Tyler':(10566,15,'20m'),'Rose Stadium, Tyler (or Kilgore)':(10566,15,'20m'),'Fort Worth area stadium':(None,120,'1h 55m'),'Newsom Stadium, Mansfield':(11000,110,'1h 40m')}
 # Past Lindale playoff sites (found in news/MaxPreps/UIL searches): pattern used for the Suggested picks above.
 SITEHIST=[('2020','Area / regional / state semi / final','Merrill Green Stadium, Bryan; Homer Bryce Stadium, Nacogdoches; Turner Stadium, Humble; AT&T Stadium'),
 ('2022','Regional semi','Rose Stadium, Tyler'),('2023','Bi-district / area','Homer Bryce Stadium, Nacogdoches; Merrill Green Stadium, Bryan'),
 ('2024','Area','Panther Stadium, Waco Midway')]
 SITEPATTERN='Nacogdoches is the usual playoff site (user: most years). Dallas-area opponents: Mesquite Memorial, Mansfield Newsom, Commerce. Region I teams in the semi: McLane (Waco) or Knight Stadium (Fort Worth).'
+# Why each suggested site: based on sites 4A Division I has used this year and last (2026 Region II area games at Corsicana, Commerce,
+# Kaufman and Forney; regional at Rose Stadium; 2025 4A DI semis at Fort Worth's Knight Stadium and Waco's McLane Stadium) and on other
+# brackets competing for the same stadiums on the same weekend.
+SNOTE={'Henderson':'Announced: Tyler Morning Telegraph and the Yahoo/Star-Telegram regional pairings.',
+'Pine Tree':'Tyler is 15 miles from Lindale and about 40 from Longview, and Lindale played a 2022 playoff game there. Rose Stadium hosts many playoff games on region-final weekend (it had the 4A Division II Region II final in 2025), so a Thursday or Saturday slot, or a site between the schools such as Kilgore, is possible.',
+'Paris':'4A DI Region II already used Commerce this year (Paris vs. Lincoln in the area round), and it sits between Paris and the Dallas side. Sulphur Springs, roughly halfway between Paris and Lindale, is the other likely option. Where Pine Tree and Paris play this week is a useful hint.',
+'Decatur':'The 2025 4A DI semifinal between Stephenville and Celina was at Fort Worth\'s Knight Stadium; Waco\'s McLane Stadium took the other semi. A Fort Worth or Dallas-area stadium splits the drive for a team from northwest of Fort Worth.',
+'Springtown':'The 2025 4A DI semifinal between Stephenville and Celina was at Fort Worth\'s Knight Stadium; Waco\'s McLane Stadium took the other semi. A Fort Worth or Dallas-area stadium splits the drive for a team from west of Fort Worth.',
+'Aubrey':'Dallas-Fort Worth area stadium likely; a 2025 4A DI semi was at Fort Worth\'s Knight Stadium.','Lake Dallas':'Dallas-Fort Worth area stadium likely; a 2025 4A DI semi was at Fort Worth\'s Knight Stadium.',
+'Randall':'Amarillo is about 450 miles from Lindale; Wichita Falls is close to halfway.','Canyon':'Canyon is about 470 miles from Lindale; Wichita Falls is close to halfway.','West Plains':'Wichita Falls is close to halfway from the Amarillo area.',
+'Andress':'El Paso is about 730 miles from Lindale, so a West Texas site such as Abilene (or farther west) is likely.'}
 EARLIER={'Henderson':'Won 29-21 at Henderson, Sep 25','Pine Tree':'Won 45-21 at Pine Tree, Oct 16'}
 path=[]
 for i,name in enumerate(rounds):
@@ -65,7 +76,7 @@ for i,name in enumerate(rounds):
         if name=='title': s=('AT&T Stadium, Arlington','Set')
         f=FACT.get(s[0],(None,None,None))
         path.append({'key':f'{name}-{t}','order':i,'round':RN[name],'when':WHEN[name],'opponent':t,'opp_share':pc(c/tot),'win_prob':pc(P('Lindale',t)),
-          'earlier':EARLIER.get(t,''),'site':s[0],'site_status':s[1],'capacity':f[0],'drive_miles':f[1],'drive_time':f[2]})
+          'earlier':EARLIER.get(t,''),'site_note':'' if name=='title' else SNOTE.get(t,''),'site':s[0],'site_status':s[1],'capacity':f[0],'drive_miles':f[1],'drive_time':f[2]})
     rc=sum(c for _,c in rest)
     if rc/tot>=0.005:
         s=('AT&T Stadium, Arlington','Set') if name=='title' else ('Depends on opponent','Suggested'); f=FACT.get(s[0],(None,None,None))

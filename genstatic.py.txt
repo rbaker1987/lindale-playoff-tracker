@@ -105,7 +105,7 @@ def _prow(r,same=False):
     bits=[r['site']]+([f"{r['capacity']:,} seats"] if r['capacity'] else [])+([f"{r['drive_miles']} mi"] if r['drive_miles'] else [])+([r['drive_time']] if r['drive_time'] else [])
     st=e(r['site_status'])
     head=f'<b>{e(r["opponent"])}</b>{"" if same else '<span class="rd">'+('Suggested site: ' if r['site_status']!='Set' else '')+e(r["site"])+'</span>'}<span class="chip">{r["opp_share"]}% it\'s them</span><span class="chip">Lindale wins {r["win_prob"]}%</span>'
-    info=f'<p class="lab" style="margin:0 0 8px">{e(" · ".join(bits[1:]))}'+(f' · {e(r["earlier"])}' if r['earlier'] else '')+'</p>'
+    info=f'<p class="lab" style="margin:0 0 8px">{e(" · ".join(bits[1:]))}'+(f' · {e(r["earlier"])}' if r['earlier'] else '')+'</p>'+(f'<p class="lab" style="margin:0 0 8px">Why this site: {e(r["site_note"])}</p>' if r.get('site_note') else '')
     w=_wm.get(r['opponent'])
     if not w: return f'<div class="tb tbp"><div class="th">{head}</div></div>'
     pl=w.get('plist') or _split(w.get('players',''))
@@ -122,7 +122,7 @@ for _rn in ['Regional','Region final','State semifinal','State final']:
         _r0=_rs[0]; _b=[_r0['site']]+([f"{_r0['capacity']:,} seats"] if _r0['capacity'] else [])+([f"{_r0['drive_miles']} mi"] if _r0['drive_miles'] else [])
         _sl=f'<div class="lab" style="margin:0 0 6px">'+('Suggested site, not announced: ' if _r0['site_status']!='Set' else 'Site (set): ')+f'{e(" · ".join(_b))}</div>'
     _road+=f'<div class="rnd"><div class="rh"><h3>{e(_rn)} <span class="lab">{e(_rs[0]["when"])}</span></h3><span class="lab">Lindale wins this round: <b>{pct(lin[_RW[_rn]])}</b></span></div>{_sl}'+''.join(_prow(r,_same) for r in _rs)+'</div>'
-wx=json.loads(r'''{"game": "Lindale vs. Henderson (regional round)", "when": "Fri Nov 27, 7 p.m.", "site": "Rose Stadium, Tyler", "site_status": "Set", "as_of": "Sat Nov 21, 10:47 a.m. CT", "source": "AccuWeather daily forecast for Tyler", "headline": "Early look; check again closer to game day. Friday looks mostly cloudy with a high near 61 and a 30% chance of a little rain during the day. AccuWeather gives Friday night a 55% chance of an evening shower in places, clearing later, with a low of 43, a west wind around 8 mph (gusts to 15) and a RealFeel near 36, so it could feel damp and chilly by the second half.", "cols": ["Day", "High", "Low", "Rain chance"], "rows": [["Thu Nov 26", "59\u00b0", "39\u00b0", "2% day, 8% night"], ["Fri Nov 27 (game)", "61\u00b0", "43\u00b0", "30% day, 55% night"], ["Sat Nov 28", "66\u00b0", "49\u00b0", "3% day, 1% night"]], "wear": ["Layers: a warm jacket over a sweatshirt; the forecast RealFeel is in the upper 30s late in the game.", "A beanie and gloves for the fourth quarter.", "A rain jacket or poncho in case of an evening shower; skip the umbrella so you don't block views.", "Seat cushions or a towel, since the bleachers may be wet."]}''')
+wx=json.loads(r'''{"game": "Lindale vs. Henderson (regional round)", "when": "Fri Nov 27, 7 p.m.", "site": "Rose Stadium, Tyler", "site_status": "Set", "as_of": "Sat Nov 21, 11:05 a.m. CT", "source": "National Weather Service hourly forecast for Tyler (checked against AccuWeather and weatherAI)", "headline": "Early look at game time; check again closer to game day. The NWS hourly forecast has partly cloudy skies, about 52 degrees an hour before kickoff, 50 at kickoff and dropping to the mid 40s by the end, with calm winds and only a 6% rain chance. Humidity climbs to around 80% late, so it will feel damp and chilly. AccuWeather is wetter, with a 55% chance of an evening shower in places, so the rain chance is the part most likely to change.", "cols": ["Time", "Temp", "Wind", "Rain chance", "Sky", "Humidity"], "rows": [["6 p.m.", "52\u00b0", "Calm", "6%", "Partly cloudy", "66%"], ["7 p.m. (kickoff)", "50\u00b0", "Calm", "6%", "Partly cloudy", "71%"], ["8 p.m.", "48\u00b0", "Calm", "6%", "Partly cloudy", "74%"], ["9 p.m.", "46\u00b0", "Calm", "6%", "Partly cloudy", "79%"], ["10 p.m.", "45\u00b0", "Calm", "6%", "Partly cloudy", "82%"]], "wear": ["Layers: a warm jacket over a sweatshirt; mid 40s by the fourth quarter.", "A beanie and gloves for late in the game.", "Pack a poncho just in case; AccuWeather shows an evening shower chance that NWS does not.", "Seat cushions or a towel; the bleachers may be damp from dew."]}''')
 def _wxsec(w):
     cols=w.get('cols') or ['Time','Temp','Feels like','Wind','Gusts']
     t=''.join('<tr>'+''.join(f'<td>{e(c)}</td>' for c in r)+'</tr>' for r in w['rows'])
@@ -135,6 +135,8 @@ def _wxsec(w):
 wxhtml=_wxsec(wx) if wx else ''
 wxnav='<a href="#weather">Weather</a>' if wx else ''
 ups=sorted([r for r in results if not r['fav_won']],key=lambda r:-r['pred_margin'])
+alive=sorted(odds,key=lambda r:(-r['rating'],r['team']))  # alive table: by MaxPreps rating
+RATED='ratings updated 11/19/2026'
 w=sum(1 for r in season if r['margin']>0); n=len(season)
 P=f'''<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -231,8 +233,8 @@ tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .to
 {table(['Date','Opponent','Game type','Result','Margin'],[[r['date'],r['opponent'],r['type'],r['result'],f"{r['margin']:+d}"] for r in season],num=(4,),stack=True)}
 <h3>Playoff results, all teams</h3>
 {table(['Round','Region','Winner','Score','Loser','Ratings call'],[[r['round'],r['region'],r['winner'],r['score'],r['loser'],r['ratings_call']] for r in results],stack=True,cls=lambda i:('me ' if 'Lindale' in (results[i]['winner'],results[i]['loser']) else '')+('' if results[i]['fav_won'] else 'up'))}</section>
-<section><h2>Every team still alive</h2>
-{table(['Team','Record','Region','Rating','Win area','Win regional','Win region','Reach final','Win title'],[[r['team'],r['record'],r['region'],f"{r['rating']:.2f}",pct(r['p_area']),pct(r['p_regional']),pct(r['p_region']),pct(r['p_final']),pct(r['p_title'])] for r in odds],num=(3,4,5,6,7,8),hm=(1,2,3,4,5),cls=lambda i:'me' if odds[i]['team']=='Lindale' else '')}</section>
+<section><h2>Every team still alive</h2><p class="lab" style="margin:0 0 8px">Sorted by MaxPreps rating, highest first ({e(RATED)}).</p>
+{table(['Team','Record','Region','Rating','Win area','Win regional','Win region','Reach final','Win title'],[[r['team'],r['record'],r['region'],f"{r['rating']:.2f}",pct(r['p_area']),pct(r['p_regional']),pct(r['p_region']),pct(r['p_final']),pct(r['p_title'])] for r in alive],num=(3,4,5,6,7,8),hm=(1,4),cls=lambda i:'me' if alive[i]['team']=='Lindale' else '')}</section>
 </main>
 <script>
 (function(){{var tb=document.querySelector("#path tbody");if(!tb)return;
