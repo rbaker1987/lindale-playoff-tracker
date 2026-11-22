@@ -220,7 +220,7 @@ tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .to
 </section>
 <section id="games"><h2>This round's games (Thu, Fri, Sat)</h2>
 {table(['Matchup','Region','When','Site','Ratings favorite','Favorite wins / result'],[[r['matchup'],r['region'],r['when'],r['site'],r['favorite'],(r['final'] if r.get('final') else f"{r['fav_prob']}%")] for r in games],num=(),stack=True,wrapc=(0,3,4,5),cls=lambda i:'me' if games[i]['lindale_path'] else '')}
-<p class="lab" style="margin-top:8px">Region II games, the ones on Lindale's side of the bracket, are in bold. Thursday's and Friday's games are final. Randall, Springtown and Canyon all won as underdogs on Thursday. All Friday results now have at least two sources. Only the Calallen score varies (56-15 in two sources, 63-15 in one). Saturday's games show the ratings favorite's chance.</p></section>
+<p class="lab" style="margin-top:8px">Region II games, the ones on Lindale's side of the bracket, are in bold. All of this round's games are final. Randall, Springtown and Canyon all won as underdogs on Thursday. Only the Calallen score varied by source (56-15 per MaxPreps and two others, 63-15 per one). Saturday's two games are final too (Decatur upset Andress). MaxPreps' bracket confirms every score.</p></section>
 <div class="two" id="charts">
 <section><h2>Title odds, top eight teams</h2>{barsvg}<h3>Upsets</h3><ul>{''.join(f"<li>{e(r['winner'])} {e(r['score'])} over {e(r['loser'])}, which was favored by {r['pred_margin']:g}</li>" for r in ups)}</ul></section>
 <section><h2>Ratings vs. results so far</h2><p>Favorites have won <b>{sum(r['fav_won'] for r in results)}</b> of <b>{len(results)}</b> playoff games. The dashed line marks a perfect prediction.</p>
