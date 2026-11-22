@@ -40,20 +40,24 @@ odds.sort(key=lambda r:(-cnt['title'][r['team']],-r['rating']))
 SITE={'Wilmer-Hutchins':('City Bank Stadium, Forney','Set'),'Henderson':("SFA's Homer Bryce Stadium, Nacogdoches",'Suggested'),
 'Kimball':('East Texas A&M, Commerce','Suggested'),'Pine Tree':('Rose Stadium, Tyler','Suggested'),
 'Paris':('East Texas A&M, Commerce','Suggested'),'Lincoln':('Mesquite Memorial Stadium','Suggested'),'Kennedale':('Newsom Stadium, Mansfield','Suggested'),
-'Andress':("Shotwell Stadium, Abilene",'Suggested'),'Decatur':("Baylor's McLane Stadium, Waco",'Suggested'),'Aubrey':("Baylor's McLane Stadium, Waco",'Suggested'),
-'Springtown':("Baylor's McLane Stadium, Waco",'Suggested'),'Lake Dallas':("Baylor's McLane Stadium, Waco",'Suggested'),
-'West Plains':('Memorial Stadium, Wichita Falls','Suggested'),'Randall':('Memorial Stadium, Wichita Falls','Suggested'),'Canyon':('Memorial Stadium, Wichita Falls','Suggested')}
+'Andress':("Shotwell Stadium, Abilene",'Suggested'),'Decatur':("C.H. Collins Complex, Denton",'Suggested'),'Aubrey':("C.H. Collins Complex, Denton",'Suggested'),
+'Springtown':("Knight Stadium, Fort Worth",'Suggested'),'Lake Dallas':("C.H. Collins Complex, Denton",'Suggested'),
+'West Plains':('Shotwell Stadium, Abilene','Suggested'),'Randall':('Shotwell Stadium, Abilene','Suggested'),'Canyon':('Shotwell Stadium, Abilene','Suggested')}
+# Other plausible state-semifinal sites against a Region I opponent (shown as 'Also possible'). Precedents: 4A-I Region I vs II semis were Collins Complex, Denton (2023, Decatur-Anna); Shotwell Stadium, Abilene (2024, West Plains-Celina); Knight Stadium, Fort Worth (2025, Stephenville-Celina).
+ALT={'Decatur':'Knight Stadium, Fort Worth; Ford Center, Frisco; Mesquite Memorial','Springtown':'C.H. Collins Complex, Denton; Ford Center, Frisco; Mesquite Memorial',
+'Randall':'Memorial Stadium, Wichita Falls; Knight Stadium, Fort Worth','Canyon':'Memorial Stadium, Wichita Falls; Knight Stadium, Fort Worth'}
 WHEN={'area':'Fri Nov 20, 7 p.m.','regional':'Nov 26-28','region':'Dec 3-5','semi':'Dec 10-12','title':'Sat Dec 19, 3 p.m.'}
 RN={'area':'Area','regional':'Regional','region':'Region final','semi':'State semifinal','title':'State final'}
 # Site facts: (capacity, approx. one-way road miles from Lindale, approx. drive time). Miles and times are Claude's estimates.
 FACT={'Nacogdoches (SFA) or Rose Stadium, Tyler':(None,'15-85','20m-1h 40m'),'City Bank Stadium, Forney':(8500,70,'1h 05m'),"SFA's Homer Bryce Stadium, Nacogdoches":(14575,85,'1h 40m'),'East Texas A&M, Commerce':(11582,85,'1h 35m'),
 'Mesquite Memorial Stadium':(19400,80,'1h 15m'),'Shotwell Stadium, Abilene':(15075,280,'4h 10m'),"Baylor's McLane Stadium, Waco":(45140,150,'2h 30m'),
-'Memorial Stadium, Wichita Falls':(14500,225,'3h 40m'),'AT&T Stadium, Arlington':(80000,115,'1h 45m'),'Rose Stadium, Tyler':(None,15,'20m'),'Newsom Stadium, Mansfield':(11000,110,'1h 40m')}
+'Memorial Stadium, Wichita Falls':(14500,225,'3h 40m'),'AT&T Stadium, Arlington':(80000,115,'1h 45m'),'Rose Stadium, Tyler':(None,15,'20m'),'Newsom Stadium, Mansfield':(11000,110,'1h 40m'),'C.H. Collins Complex, Denton':(12000,135,'2h 10m'),'Knight Stadium, Fort Worth':(7500,150,'2h 25m'),'Ford Center, Frisco':(12000,100,'1h 40m')}
 # Past Lindale playoff sites (found in news/MaxPreps/UIL searches): pattern used for the Suggested picks above.
 SITEHIST=[('2020','Area / regional / state semi / final','Merrill Green Stadium, Bryan; Homer Bryce Stadium, Nacogdoches; Turner Stadium, Humble; AT&T Stadium'),
 ('2022','Regional semi','Rose Stadium, Tyler'),('2023','Bi-district / area','Homer Bryce Stadium, Nacogdoches; Merrill Green Stadium, Bryan'),
-('2024','Area','Panther Stadium, Waco Midway')]
-SITEPATTERN='Nacogdoches is the usual playoff site (user: most years). Dallas-area opponents: Mesquite Memorial, Mansfield Newsom, Commerce. Region I teams in the semi: McLane (Waco) or Knight Stadium (Fort Worth).'
+('2024','Area','Panther Stadium, Waco Midway'),
+('2023','4A-I state semi, Region I vs II (Decatur-Anna)','C.H. Collins Complex, Denton'),('2024','4A-I state semi, Region I vs II (West Plains-Celina)','Shotwell Stadium, Abilene'),('2025','4A-I state semi, Region I vs II (Stephenville-Celina)','Knight Stadium, Fort Worth')]
+SITEPATTERN='Nacogdoches is the usual playoff site (user: most years). Dallas-area opponents: Mesquite Memorial, Mansfield Newsom, Commerce. Region I teams in the semi: Collins Complex (Denton), Shotwell (Abilene) or Knight Stadium (Fort Worth); precedent 2023-25.'
 EARLIER={'Henderson':'Won 29-21 at Henderson, Sep 25','Pine Tree':'Won 45-21 at Pine Tree, Oct 16'}
 path=[]
 for i,name in enumerate(rounds):
@@ -65,7 +69,7 @@ for i,name in enumerate(rounds):
         if name=='title': s=('AT&T Stadium, Arlington','Set')
         f=FACT.get(s[0],(None,None,None))
         path.append({'key':f'{name}-{t}','order':i,'round':RN[name],'when':WHEN[name],'opponent':t,'opp_share':pc(c/tot),'win_prob':pc(P('Lindale',t)),
-          'earlier':EARLIER.get(t,''),'site':s[0],'site_status':s[1],'capacity':f[0],'drive_miles':f[1],'drive_time':f[2]})
+          'earlier':EARLIER.get(t,''),'alts':ALT.get(t,'') if name=='semi' else '','site':s[0],'site_status':s[1],'capacity':f[0],'drive_miles':f[1],'drive_time':f[2]})
     rc=sum(c for _,c in rest)
     if rc/tot>=0.005:
         s=('AT&T Stadium, Arlington','Set') if name=='title' else ('Depends on opponent','Suggested'); f=FACT.get(s[0],(None,None,None))

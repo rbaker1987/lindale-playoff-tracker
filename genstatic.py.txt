@@ -122,7 +122,7 @@ for _rn in ['Regional','Region final','State semifinal','State final']:
         _r0=_rs[0]; _b=[_r0['site']]+([f"{_r0['capacity']:,} seats"] if _r0['capacity'] else [])+([f"{_r0['drive_miles']} mi"] if _r0['drive_miles'] else [])
         _sl=f'<div class="lab" style="margin:0 0 6px">'+('Suggested site, not announced: ' if _r0['site_status']!='Set' else 'Site (set): ')+f'{e(" · ".join(_b))}</div>'
     _road+=f'<div class="rnd"><div class="rh"><h3>{e(_rn)} <span class="lab">{e(_rs[0]["when"])}</span></h3><span class="lab">Lindale wins this round: <b>{pct(lin[_RW[_rn]])}</b></span></div>{_sl}'+''.join(_prow(r,_same) for r in _rs)+'</div>'
-wx=None  # regional game time and site not announced yet; add the forecast when they are
+wx=json.loads(r'''{"game": "Regional round vs. Henderson", "when": "Fri Nov 27, 7 p.m.", "site": "Rose Stadium, Tyler", "site_status": "Set", "as_of": "Sat Nov 21, 6:30 p.m. CT", "source": "National Weather Service, with a second forecast blended in", "headline": "Early look; recheck midweek. Friday looks mostly sunny and cool, with a high near 59, dropping to about 40 overnight, and a small chance of showers.", "cols": ["Day", "High", "Overnight low", "Rain chance"], "rows": [["Fri Nov 27 (game day)", "59", "40", "about 10-15%"]], "wear": ["Dress in layers with a jacket, hat and gloves; it will feel colder after dark.", "Bring a seat cushion or blanket for the cold bleachers.", "Toss a poncho in the bag in case of a shower."]}''')
 def _wxsec(w):
     cols=w.get('cols') or ['Time','Temp','Feels like','Wind','Gusts']
     t=''.join('<tr>'+''.join(f'<td>{e(c)}</td>' for c in r)+'</tr>' for r in w['rows'])
@@ -213,7 +213,7 @@ tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .to
 {wxhtml}<section id="watch"><h2>Key players</h2><h3 style="margin:0 0 8px;font-size:1rem">Lindale</h3><div class="plg">{mine}</div>{nextblock}<p class="lab" style="margin-top:8px">Stats come from local news reports (Tyler Morning Telegraph, ETBlitz, Longview News-Journal, Henderson News) through Nov 19, before Friday's area round. Player stats have not been updated for that game yet. Where no named players turned up in sources, the card says so. Most teams only have box scores, so this is not a scouting report. Updated by hand after each round.</p></section>
 <section><h2>Lindale's odds, game by game</h2><div class="cards">{cards}</div></section>
 <section id="path"><h2>Lindale's road to the title</h2>
-<p class="sugg"><b>Site suggestions only.</b> UIL has not announced these game sites. They are guesses based on where Lindale has played before, and any of them can change. Only sites marked "set" are confirmed.</p>
+<p class="sugg"><b>Only the regional site is confirmed.</b> Lindale vs. Henderson is at Rose Stadium in Tyler (Tyler Morning Telegraph). Every later site is a suggestion based on where Lindale has played before, and any of them can change. Only sites marked "set" are confirmed.</p>
 <p class="lab" style="margin-bottom:10px">Round by round, assuming Lindale advances. Open an opponent for its key players. "Set" sites are announced; "suggested" sites are estimates based on where Lindale has played before (Nacogdoches or Tyler for East Texas, Commerce, Mesquite or Mansfield for the Dallas area, Denton, Fort Worth or Abilene for a state semifinal against a Region I team; the last three Region I vs. Region II 4A semifinals were at Denton's Collins Complex in 2023, Abilene's Shotwell Stadium in 2024 and Fort Worth's Knight Stadium in 2025). Miles are from Lindale and approximate.</p>
 {_road}
 <details class="tb"><summary class="th"><b>Full Region II bracket</b><span class="rd">chance to win each round</span></summary><div class="bracket">{col('Area round',2,'p_area',True)}{col('Regional round',4,'p_regional')}{col('Region final',8,'p_region')}</div></details>
@@ -232,7 +232,7 @@ tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .to
 <h3>Playoff results, all teams</h3>
 {table(['Round','Region','Winner','Score','Loser','Ratings call'],[[r['round'],r['region'],r['winner'],r['score'],r['loser'],r['ratings_call']] for r in results],stack=True,cls=lambda i:('me ' if 'Lindale' in (results[i]['winner'],results[i]['loser']) else '')+('' if results[i]['fav_won'] else 'up'))}</section>
 <section><h2>Every team still alive</h2>
-{table(['Team','Record','Region','Rating','Win area','Win regional','Win region','Reach final','Win title'],[[r['team'],r['record'],r['region'],f"{r['rating']:.2f}",pct(r['p_area']),pct(r['p_regional']),pct(r['p_region']),pct(r['p_final']),pct(r['p_title'])] for r in odds],num=(3,4,5,6,7,8),hm=(1,2,3,4,5),cls=lambda i:'me' if odds[i]['team']=='Lindale' else '')}</section>
+{table(['Team','Record','Region','Rating','Win area','Win regional','Win region','Reach final','Win title'],[[r['team'],r['record'],r['region'],f"{r['rating']:.2f}",pct(r['p_area']),pct(r['p_regional']),pct(r['p_region']),pct(r['p_final']),pct(r['p_title'])] for r in sorted(odds,key=lambda r:-r['rating'])],num=(3,4,5,6,7,8),hm=(1,2,3,4,5),cls=lambda i:'me' if sorted(odds,key=lambda r:-r['rating'])[i]['team']=='Lindale' else '')}</section>
 </main>
 <script>
 (function(){{var tb=document.querySelector("#path tbody");if(!tb)return;
