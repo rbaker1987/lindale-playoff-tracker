@@ -23,7 +23,7 @@ def table(head,rows,num=(),cls=None,raw=(),wrapc=(),stack=False,hm=()):
 def pathrow(r):
     opp=e(r['opponent'])+(f"<small>{e(r['earlier'])}</small>" if r['earlier'] else '')
     bits=[e(r['site_status'])]+([f"{r['capacity']:,} seats"] if r['capacity'] else [])+([f"{r['drive_miles']} mi"] if r['drive_miles'] else [])+([e(r['drive_time'])] if r['drive_time'] else [])
-    site=e(r['site'])+f"<small>{' · '.join(bits)}</small>"
+    site=e(r['site'])+f"<small>{' · '.join(bits)}</small>"+(f"<small>Also possible: {e(r['alts'])}</small>" if r.get('alts') else '')
     return [r['round'],r['when'],opp,f"{r['opp_share']}%",f"{r['win_prob']}%",site]
 # title bar chart
 top=odds[:8]; mx=max(r['p_title'] for r in top)
@@ -214,7 +214,7 @@ tr[hidden]{{display:none!important}} .tog td{{border-top:0;padding-top:2px}} .to
 <section><h2>Lindale's odds, game by game</h2><div class="cards">{cards}</div></section>
 <section id="path"><h2>Lindale's road to the title</h2>
 <p class="sugg"><b>Site suggestions only.</b> UIL has not announced these game sites. They are guesses based on where Lindale has played before, and any of them can change. Only sites marked "set" are confirmed.</p>
-<p class="lab" style="margin-bottom:10px">Round by round, assuming Lindale advances. Open an opponent for its key players. "Set" sites are announced; "suggested" sites are estimates based on where Lindale has played before (Nacogdoches or Tyler for East Texas, Commerce, Mesquite or Mansfield for the Dallas area, Waco for state semifinals). Miles are from Lindale and approximate.</p>
+<p class="lab" style="margin-bottom:10px">Round by round, assuming Lindale advances. Open an opponent for its key players. "Set" sites are announced; "suggested" sites are estimates based on where Lindale has played before (Nacogdoches or Tyler for East Texas, Commerce, Mesquite or Mansfield for the Dallas area, Denton, Fort Worth or Abilene for a state semifinal against a Region I team; the last three Region I vs. Region II 4A semifinals were at Denton's Collins Complex in 2023, Abilene's Shotwell Stadium in 2024 and Fort Worth's Knight Stadium in 2025). Miles are from Lindale and approximate.</p>
 {_road}
 <details class="tb"><summary class="th"><b>Full Region II bracket</b><span class="rd">chance to win each round</span></summary><div class="bracket">{col('Area round',2,'p_area',True)}{col('Regional round',4,'p_regional')}{col('Region final',8,'p_region')}</div></details>
 </section>
